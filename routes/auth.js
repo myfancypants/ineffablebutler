@@ -13,6 +13,9 @@ var googleConfig = require('../config/googleConfig');
 var facebookConfig = require('../config/facebookConfig');
 var authRouter = express.Router();
 
+var NEO_db = require('../config/neodb'); //RENAME THIS!!!!
+console.log("got here ", NEO_db);
+
 //if authentication succeeds, a session will be established and a cookie set in user's browser
 // serializeUser is only called during authentication, which indicates what user information to store
 // deserializeUser is invoked on every request by passport.sessions (making req.user object available in request handler)
@@ -40,9 +43,46 @@ var saveUser = function (accessToken, refreshToken, profile, done) {
   });
 };
 
+var NEO_saveUser = function (accessToken, refreshToken, profile, done) {
+
+  NEO_db.cypherQuery(
+    'MATCH (user: User) WHERE user.loginId = \'' + profile.id + '\' RETURN user',
+     function (err, result) {
+      if (err) {
+        return console.log(err);
+      }
+      console.log(result.data); // delivers an array of query results
+      console.log(result.columns); // delivers an array of names of objects getting returned
+
+      if(result.data.length === 0) {
+        NEO_db.cypherQuery(
+          'CREATE (user: User { loginId: {loginId}, loginMethod: {loginMethod}, displayName: {displayName}, password: {password}, salt: {salt} }) RETURN user',
+          {
+            loginId: profile.id,
+            loginMethod: profile.provider,
+            displayName: profile.displayName,
+            password: "",
+            salt: ""
+          }, function (err, result) {
+            if (err) {
+              return console.log(err);
+            }
+            console.log(result.data); // delivers an array of query results
+            console.log(result.columns); // delivers an array of names of objects getting returned
+          }
+        );
+      }
+
+    }
+  );
+
+};
+
+
 //creates new Google Strategy/Facebook Strategy and passes along clientID/secret from googleConfig/facebookConfig (both obtained from respective Dev Console)
 passport.use(new GoogleStrategy(googleConfig, function (accessToken, refreshToken, profile, done) {
   saveUser(accessToken, refreshToken, profile, done);
+  NEO_saveUser(accessToken, refreshToken, profile, done);
 }));
 
 passport.use(new FacebookStrategy(facebookConfig, function (accessToken, refreshToken, profile, done) {
