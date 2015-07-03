@@ -5,7 +5,7 @@ muniButlerApp.factory('Auth', function ($http) {
     });
   };
 
-  var update = function (user) {
+  var update = function (user) { // this needs to be updated - send back only the user and the new route
     console.log("user: ", user);
     return $http.put('/api/user', user, {
       withCredentials: true
@@ -20,7 +20,7 @@ muniButlerApp.factory('Auth', function ($http) {
 
   return {
     check: check,
-    logout: logout, 
+    logout: logout,
     update: update
   };
 });
