@@ -25,7 +25,7 @@ muniButlerApp.factory('GoogleMaps', function ($q) {
 
       // Create Google Maps Direction Service object
       var directions = new google.maps.DirectionsService();
-      // Create the Directions Request Object needed to request directions from Google Maps API 
+      // Create the Directions Request Object needed to request directions from Google Maps API
       var directionsRequest = {
         origin: from,
         destination: to,
@@ -39,7 +39,7 @@ muniButlerApp.factory('GoogleMaps', function ($q) {
         avoidHighways: false,
         avoidTolls: false
       };
-      // Create the Google Maps Directions Renderer object which will be used to display 
+      // Create the Google Maps Directions Renderer object which will be used to display
       // directions results on the map of routes.html
       var directionsDisplay = new google.maps.DirectionsRenderer();
       // Create the map options object to set map settings
@@ -50,7 +50,7 @@ muniButlerApp.factory('GoogleMaps', function ($q) {
       // Create the map with the mapOptions object
       var map = new google.maps.Map(document.getElementById('routes-map'), mapOptions);
       directionsDisplay.setMap(map);
-      // Make the call to get the route options from Google Maps API 
+      // Make the call to get the route options from Google Maps API
       directions.route(directionsRequest, function (results, status) {
         if (!status === "OK") {
           throw status;
@@ -64,7 +64,7 @@ muniButlerApp.factory('GoogleMaps', function ($q) {
           // create an object to store all info related to this route
           // it will be added to the options.routes array
           var routeObj = {};
-          // define the array to store tuples of bus line numbers, stop names, and directions 
+          // define the array to store tuples of bus line numbers, stop names, and directions
           // for the given route
           routeObj.lines = [];
           routeObj.duration = route.legs['0'].duration.text;
@@ -75,7 +75,8 @@ muniButlerApp.factory('GoogleMaps', function ($q) {
             if (steps[key].travel_mode === "TRANSIT") {
               var busNumber = route.legs['0'].steps[key].transit.line.short_name;
               var stopName = route.legs['0'].steps[key].transit.departure_stop.name;
-              
+              var endName = route.legs['0'].steps[key].transit.arrival_stop.name;
+
               // Find out if the bus is heading 'Inbound' or 'Outbound'
               var arrivalLocation = route.legs['0'].steps[key].transit.arrival_stop.location.F;
               var departureLocation = route.legs['0'].steps[key].transit.departure_stop.location.F;
@@ -89,7 +90,7 @@ muniButlerApp.factory('GoogleMaps', function ($q) {
               // Check to make sure only steps involving busses are added to the route.lines array
               // This is to prevent adding a "WALKING" travel_mode route to the route.lines array
               if (busNumber) {
-                routeObj.lines.push([busNumber, stopName, direction]);
+                routeObj.lines.push([busNumber, stopName, direction, endName]);
               }
             }
           }
@@ -98,7 +99,7 @@ muniButlerApp.factory('GoogleMaps', function ($q) {
             routes.push(routeObj);
           }
         });
-    
+
         if (routes.length > 0){
           resolve(routes);
         } else {
