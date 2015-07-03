@@ -29,19 +29,19 @@ passport.deserializeUser(function (obj, done) {
 });
 
 //Function that saves new user to UserDB (../models/user.js)
-var saveUser = function (accessToken, refreshToken, profile, done) {
-  UserDB.findOrCreate({
-    loginId: profile.id,
-    loginMethod: profile.provider,
-    displayName: profile.displayName
-  }, function (err, user, created) {
-    if (err) {
-      console.log("error:", err);
-    }
-    console.log("created:", created, user, accessToken, refreshToken);
-    return done(null, profile);
-  });
-};
+// var saveUser = function (accessToken, refreshToken, profile, done) {
+//   UserDB.findOrCreate({
+//     loginId: profile.id,
+//     loginMethod: profile.provider,
+//     displayName: profile.displayName
+//   }, function (err, user, created) {
+//     if (err) {
+//       console.log("error:", err);
+//     }
+//     console.log("created:", created, user, accessToken, refreshToken);
+//     return done(null, profile);
+//   });
+// };
 
 var NEO_saveUser = function (accessToken, refreshToken, profile, done) {
 
@@ -69,10 +69,11 @@ var NEO_saveUser = function (accessToken, refreshToken, profile, done) {
             }
             console.log(result.data); // delivers an array of query results
             console.log(result.columns); // delivers an array of names of objects getting returned
+            return done(null, profile);
           }
         );
       }
-
+      return done(null, profile);
     }
   );
 
@@ -81,12 +82,13 @@ var NEO_saveUser = function (accessToken, refreshToken, profile, done) {
 
 //creates new Google Strategy/Facebook Strategy and passes along clientID/secret from googleConfig/facebookConfig (both obtained from respective Dev Console)
 passport.use(new GoogleStrategy(googleConfig, function (accessToken, refreshToken, profile, done) {
-  saveUser(accessToken, refreshToken, profile, done);
+  // saveUser(accessToken, refreshToken, profile, done);
   NEO_saveUser(accessToken, refreshToken, profile, done);
 }));
 
 passport.use(new FacebookStrategy(facebookConfig, function (accessToken, refreshToken, profile, done) {
-  saveUser(accessToken, refreshToken, profile, done);
+  // saveUser(accessToken, refreshToken, profile, done);
+  NEO_saveUser(accessToken, refreshToken, profile, done);
 }));
 
 //express routes that send user authentication; upon successful authentication from FB/Google, user is sent back to callback url
@@ -104,11 +106,10 @@ authRouter.get('/google/callback', passport.authenticate('google', {
 
 authRouter.get('/facebook', passport.authenticate('facebook'));
 
-authRouter.get('/facebook/callback', passport.authenticate('facebook', {failureRedirect: '/'}), 
+authRouter.get('/facebook/callback', passport.authenticate('facebook', {failureRedirect: '/'}),
   function(req, res){
     // Successful authentication, redirect home.
     res.redirect('/');
 });
 
-module.exports = authRouter; 
-
+module.exports = authRouter;
