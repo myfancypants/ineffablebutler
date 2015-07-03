@@ -1,16 +1,16 @@
 /*
  ** RoutesController.js
  ** Logic used for displaying a user's route options and handling selections.
- ** 
+ **
  ** Authors: Danielle Knudson, Albert Tang
  */
 
 muniButlerApp.controller('RoutesController', function ($scope, $location, $timeout, User, GoogleMaps, Bus) {
-  
+
   /**************
    ** VARIABLES **
    ***************/
-  
+
   $scope.model = {
     trip: User.trip,
     going: true,
@@ -54,7 +54,7 @@ muniButlerApp.controller('RoutesController', function ($scope, $location, $timeo
 
       GoogleMaps.getRouteOptions(User.trip['to'], User.trip['from']).then(function (routes) {
         $scope.model.routeOptions = routes;
-        Bus.getBusesArrivalTimes(routes); 
+        Bus.getBusesArrivalTimes(routes);
       }, function (error) {
         console.log('Failed: ' + error);
       });
@@ -63,7 +63,7 @@ muniButlerApp.controller('RoutesController', function ($scope, $location, $timeo
     } else if (!$scope.model.going && $scope.model.returning) {
       $scope.model.route.route = [busNumber, stopName, duration, arrivalTimes];
       User.addRoute($scope.model.route);
-      // reset variables so that the user can select 
+      // reset variables so that the user can select
       // the departure route for the next route entered on home.html
       $scope.model.returning = false;
       $scope.model.going = true;
@@ -77,7 +77,7 @@ muniButlerApp.controller('RoutesController', function ($scope, $location, $timeo
    ***************/
 
   // If the user hasn't entered a departure or destination route,
-  // the user should be redirected to the home page 
+  // the user should be redirected to the home page
   if (!$scope.model.route.to || !$scope.model.route.from) {
     $location.path('/');
   }
@@ -86,11 +86,10 @@ muniButlerApp.controller('RoutesController', function ($scope, $location, $timeo
   $timeout(function(){
     GoogleMaps.getRouteOptions(User.trip.from, User.trip.to).then(function (routes) {
       $scope.model.routeOptions = routes;
-      Bus.getBusesArrivalTimes(routes); 
+      Bus.getBusesArrivalTimes(routes);
     }, function (error) {
       console.log('Failed: ' + error);
     });
   });
   // Update the bus arrival times every second
 }); //end of RoutesController
-
