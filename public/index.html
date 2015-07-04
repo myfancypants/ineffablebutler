@@ -30,13 +30,20 @@
   <script src="js/controllers/LogController.js"></script>
   <script src="js/controllers/HomeController.js"></script>
   <script src="js/controllers/RoutesController.js"></script>
+  <script src="js/controllers/UserlistController.js"></script>
   <!-- endbuild -->
 </head>
 
 <body ng-app="muniButler">
-  <div class="page-content">
+  <div class="page-content" ng-controller="LogController">
     <!-- log out button -->
-    <div class="btn-container login-logout" ng-controller="LogController">
+    <div class="btn-container login-logout" ng-controller="UserlistController">
+      <md-button class="md-raised md-primary btn home" ng-show="loggedin === true && inUserlist === true" ng-click="routeToUserlist()">
+        Home
+      </md-button>      
+       <md-button class="md-raised md-primary btn userlist" ng-show="loggedin === true && inUserlist === false" ng-click="routeToUserlist()">
+        Userlist
+      </md-button>     
       <md-button class="md-raised md-primary btn logout" ng-show="loggedin === true" ng-click="logout()">
         Log Out
       </md-button>

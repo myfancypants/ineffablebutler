@@ -1,0 +1,18 @@
+<style>
+
+  .clickable {
+    cursor: pointer;
+  }
+</style>
+
+<md-content layout-padding layout-sm="column">
+  <div ng-controller="UserlistController" ng-init="getUserlist()">
+    <ul>
+      <li ng-repeat="user in userlist | orderBy:'+toString()' ">
+
+        <div class="clickable" ng-click="befriend(username, user[0])"> {{user[0]}} </div>
+
+      </li>
+    </ul>
+  </div>
+</md-content>
