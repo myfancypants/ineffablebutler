@@ -1,0 +1,34 @@
+Common Cypher Queries
+
+
+// Returns all users connected to a specific stop
+match (n {name:3})-[:User]-(b) where b:Person return b
+
+// returns all users connected to a specific stop n layers deep. n can be any specificed depth
+match (n {name:3})-[:User*1..n]-(b) where b:Person return b
+
+// returns all nodes of a wildcard Route Name although includes both In/outbound routes
+match (n)-[r]-(a) where type(r) =~ "L_.*" return n,a
+
+// returns all nodes of a route name of a specified in/outbound
+match (n)-[r]-(a) where type(r) =~ "L_L.*I.*" return n,a
+
+// returns all nodes of a specified stop n layers deep. Also includes stops not on intended route
+match (n)-[*1..3]-(a:Stop) where n.name = "L" return n,a
+
+
+match (n)-[r]-(a) where type(r) =~ "F_.*I.*" and n.name =~ "Market.*5th.*" match (n)-[*1..3]-(b) return n,b
+
+
+match (n)--()--()--()--(b) where n.name =~ "Mark.*5th.*" and b.name =~ ".*New.*" return n, b
+
+
+match (n)-[r]-(a) where type(r) =~ "30_.*" return n,a
+
+
+
+
+match (n:User {name: "Steve"})-[r]-(b:Route) 
+match (n)-[:Friends]-(z:User)
+match (z)-[s]-(c:Route)
+match (n)-[:Friends]-(z) where type(r) = type(s) return n,z
