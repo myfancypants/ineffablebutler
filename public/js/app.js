@@ -16,6 +16,10 @@ var muniButlerApp = angular.module('muniButler', ['ngMap', 'ngResource', 'ngRout
       templateUrl: 'views/login.html',
       controller: ''
     })
+    .when('/userlist', {
+      templateUrl: 'views/userlist.html',
+      controller: ''
+    })  
     .otherwise({redirectTo: '/'});
     // Your code here
 })
